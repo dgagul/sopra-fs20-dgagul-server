@@ -3,8 +3,10 @@ package ch.uzh.ifi.seal.soprafs20.controller;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPostDTO;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPutDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.mapper.DTOMapper;
 import ch.uzh.ifi.seal.soprafs20.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,7 @@ public class UserController {
         this.userService = userService;
     }
 
+
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -40,6 +43,7 @@ public class UserController {
         return userGetDTOs;
     }
 
+    // Todo: ResponseStatus status code 201 if CREATED, 409 CONFLICT if already exists
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -53,4 +57,31 @@ public class UserController {
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
+
+    // Todo: ResponseStatus status code 200 if found, 204 NO_CONTENT if already logged in or 401 UNAUTHORIZED if wrong credentials
+    //  could maybe return loggedInUser in DTO representation
+    @PutMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void updateUser(@RequestBody UserPutDTO userPutDTO) {
+        // convert API user to internal representation
+        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+
+        // login user
+        User loggedInUser = userService.updateUser(userInput);
+    }
+
+    /*
+    @GetMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO getUserById(@PathVariable String id){
+        return userService.getUserById(id);
+    }
+
+     */
+
+
+
+
 }
