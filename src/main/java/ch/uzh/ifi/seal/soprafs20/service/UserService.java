@@ -114,6 +114,7 @@ public class UserService {
         user.setToken(UUID.randomUUID().toString());
         user.setStatus(UserStatus.ONLINE);
 
+
         return user;
     }
 
