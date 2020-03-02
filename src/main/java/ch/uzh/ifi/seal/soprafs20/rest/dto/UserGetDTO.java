@@ -5,9 +5,10 @@ import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 public class UserGetDTO {
 
     private Long id;
-    private String password;
     private String username;
+    private String password;
     private UserStatus status;
+
 
     public Long getId() {
         return id;
