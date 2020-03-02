@@ -13,7 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,13 +53,15 @@ public class UserService {
      * @return User newUser
      */
     public User createUser(User newUser) {
-        newUser.setToken(UUID.randomUUID().toString()); // Todo: find out token
-        newUser.setStatus(UserStatus.OFFLINE);
-        newUser.setCreationDate();
-
-        //System.out.println(newUser.getCreationDate());
-
         checkIfUserExists(newUser);
+
+        newUser.setStatus(UserStatus.OFFLINE);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        String now = formatter.format(date);
+        newUser.setCreationDate(now);
+
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newUser = userRepository.save(newUser);
@@ -75,23 +80,10 @@ public class UserService {
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByPassword = userRepository.findByPassword(userToBeCreated.getPassword());
 
-        // Todo: only username not password!!
-        String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-        /*
-        if (userByUsername != null && userByPassword != null) {
-            throw new SopraServiceException(String.format(baseErrorMessage, "username and the password", "are"));
-        }
-         */
         if (userByUsername != null) {
-            throw new SopraServiceException(String.format(baseErrorMessage, "username", "is"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The username provided is not unique!");
         }
-        /*
-        else if (userByPassword != null) {
-            throw new SopraServiceException(String.format(baseErrorMessage, "password", "is"));
-        }
-         */
     }
 
     private User findUserByCredentials(User userToBeFound) {
@@ -101,21 +93,21 @@ public class UserService {
             return userByUsername;
         }
         else {
-            // Todo: return status code 401 UNAUTHORIZED
-            String baseErrorMessage = "The login failed because credentials are incorrect!";
-            throw new SopraServiceException(baseErrorMessage);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The login failed because credentials are incorrect!");
         }
     }
 
-    public User updateUser(User userToBeLoggedIn) {
-        User user = findUserByCredentials(userToBeLoggedIn);
+    public User login(User userToBeLoggedIn) {
+        User userFound = findUserByCredentials(userToBeLoggedIn);
 
-        // Todo: if (user.getStatus() == UserStatus.ONLINE) => return 204 NO_CONTENT
-        user.setToken(UUID.randomUUID().toString());
-        user.setStatus(UserStatus.ONLINE);
+        if(userFound.getStatus() == UserStatus.ONLINE) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Already logged in!");
+        }
 
+        userFound.setToken(UUID.randomUUID().toString());
+        userFound.setStatus(UserStatus.ONLINE);
 
-        return user;
+        return userFound;
     }
 
     /*

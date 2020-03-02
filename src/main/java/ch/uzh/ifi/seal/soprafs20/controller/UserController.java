@@ -43,7 +43,6 @@ public class UserController {
         return userGetDTOs;
     }
 
-    // Todo: ResponseStatus status code 201 if CREATED, 409 CONFLICT if already exists
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -58,17 +57,18 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
 
-    // Todo: ResponseStatus status code 200 if found, 204 NO_CONTENT if already logged in or 401 UNAUTHORIZED if wrong credentials
-    //  could maybe return loggedInUser in DTO representation
     @PutMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void updateUser(@RequestBody UserPutDTO userPutDTO) {
+    public UserGetDTO updateUser(@RequestBody UserPostDTO userPostDTO) {
         // convert API user to internal representation
-        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
         // login user
-        User loggedInUser = userService.updateUser(userInput);
+        User loggedInUser = userService.login(userInput);
+
+        // convert internal representation of user back to API
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
     }
 
     /*
