@@ -110,9 +110,23 @@ public class UserService {
         return userFound;
     }
 
-    /*
-    public UserGetDTO getUserById(String id){
-        User userWithId = userRepository.findOne();
+
+    public User getUserById(Long id){
+        User userById = userRepository.getOne(id);
+        if (userById != null){
+            return userById;
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
     }
-    */
+
+    public User logout(User userToLogOut){
+        User userByToken = userRepository.findByToken(userToLogOut.getToken());
+
+        userByToken.setStatus(UserStatus.OFFLINE);
+        userByToken.setToken(null);
+
+        return userByToken;
+    }
 }

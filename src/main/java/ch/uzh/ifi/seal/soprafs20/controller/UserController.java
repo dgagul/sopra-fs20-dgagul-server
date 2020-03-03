@@ -3,10 +3,12 @@ package ch.uzh.ifi.seal.soprafs20.controller;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPostDTO;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.UserTokenDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.mapper.DTOMapper;
 import ch.uzh.ifi.seal.soprafs20.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,16 +71,44 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
     }
 
-    /*
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserGetDTO getUserById(@PathVariable String id){
-        return userService.getUserById(id);
+    public UserGetDTO getUserById(@PathVariable("id") long id){
+        User userFound = userService.getUserById(id);
+
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(userFound);
     }
 
-     */
+    @PutMapping("/logout")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO logout(@RequestBody UserTokenDTO tokenDTO){
+        User userInput = DTOMapper.INSTANCE.convertUserTokenDTOtoEntity(tokenDTO);
 
+        User loggedOutUser = userService.logout(userInput);
+
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedOutUser);
+    }
+
+    /*
+    @CrossOrigin(origins = {"http://localhost:3000", "https://sopra-fs19-boner-tobias.herokuapp.com"})
+    @PutMapping("/edit")
+    boolean editUser(@RequestBody User editUser) {
+
+        if (this.service.existsUserByUsername(editUser.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+        }
+        User user = service.getUserById(editUser.getId());
+        if(user != null) {
+            this.service.editUser(editUser);
+            return true;
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID not found");
+        }
+    }
+    */
 
 
 

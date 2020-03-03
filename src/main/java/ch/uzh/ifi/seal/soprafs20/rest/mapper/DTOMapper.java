@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs20.rest.mapper;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPostDTO;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.UserTokenDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -32,4 +33,8 @@ public interface DTOMapper {
     @Mapping(source = "token", target = "token")
     @Mapping(source = "creationDate", target = "creationDate")
     UserGetDTO convertEntityToUserGetDTO(User user);
+
+    //Token
+    @Mapping(source = "token", target = "token")
+    User convertUserTokenDTOtoEntity(UserTokenDTO userTokenDTO);
 }
