@@ -5,6 +5,7 @@ import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.exceptions.SopraServiceException;
 import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
+import ch.uzh.ifi.seal.soprafs20.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -57,7 +59,7 @@ public class UserService {
 
         newUser.setStatus(UserStatus.OFFLINE);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
         Date date = new Date();
         String now = formatter.format(date);
         newUser.setCreationDate(now);
@@ -128,5 +130,19 @@ public class UserService {
         userByToken.setToken(null);
 
         return userByToken;
+    }
+
+    public User edit(User userToEdit) {
+        System.out.println(userToEdit.getId());
+
+        User userById = userRepository.getOne(userToEdit.getId());
+
+        if (userById != null){
+            userById.setUsername(userToEdit.getUsername());
+            userById.setBirth(userToEdit.getBirth());
+            return userById;
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 }

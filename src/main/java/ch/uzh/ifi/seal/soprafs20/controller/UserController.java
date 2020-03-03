@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs20.controller;
 
 import ch.uzh.ifi.seal.soprafs20.entity.User;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.UserEditDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPostDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserTokenDTO;
@@ -91,25 +92,14 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedOutUser);
     }
 
-    /*
-    @CrossOrigin(origins = {"http://localhost:3000", "https://sopra-fs19-boner-tobias.herokuapp.com"})
-    @PutMapping("/edit")
-    boolean editUser(@RequestBody User editUser) {
 
-        if (this.service.existsUserByUsername(editUser.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
-        }
-        User user = service.getUserById(editUser.getId());
-        if(user != null) {
-            this.service.editUser(editUser);
-            return true;
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID not found");
-        }
+    @PutMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public UserGetDTO editUser(@RequestBody UserEditDTO editUser) {
+        User userToEdit = DTOMapper.INSTANCE.convertUserEditDTOtoEntity(editUser);
+
+        User editedUser = userService.edit(userToEdit);
+
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(editedUser);
     }
-    */
-
-
-
 }

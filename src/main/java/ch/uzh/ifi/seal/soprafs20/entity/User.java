@@ -37,6 +37,9 @@ public class User implements Serializable {
 	@Column(nullable = false)
     private String creationDate;
 
+    @Column
+    private String birth;
+
 
 	public Long getId() { return id; }
 	public void setId(Long id) {
@@ -73,4 +76,7 @@ public class User implements Serializable {
 
 	public String getCreationDate() { return creationDate; }
 	public void setCreationDate(String creationDate) { this.creationDate = creationDate; }
+
+	public String getBirth() { return this.birth; }
+	public void  setBirth(String birth ) { this.birth = birth; }
 }
