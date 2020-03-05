@@ -44,7 +44,7 @@ public class UserControllerTest {
     public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
         // given
         User user = new User();
-        user.setName("Firstname Lastname");
+        user.setPassword("difficultPassword");
         user.setUsername("firstname@lastname");
         user.setStatus(UserStatus.OFFLINE);
 
@@ -59,7 +59,7 @@ public class UserControllerTest {
         // then
         mockMvc.perform(getRequest).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is(user.getName())))
+                .andExpect(jsonPath("$[0].password", is(user.getPassword())))
                 .andExpect(jsonPath("$[0].username", is(user.getUsername())))
                 .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
     }
@@ -69,13 +69,13 @@ public class UserControllerTest {
         // given
         User user = new User();
         user.setId(1L);
-        user.setName("Test User");
+        user.setPassword("password123");
         user.setUsername("testUsername");
         user.setToken("1");
         user.setStatus(UserStatus.ONLINE);
 
         UserPostDTO userPostDTO = new UserPostDTO();
-        userPostDTO.setName("Test User");
+        userPostDTO.setPassword("password123");
         userPostDTO.setUsername("testUsername");
 
         given(userService.createUser(Mockito.any())).willReturn(user);
@@ -89,14 +89,14 @@ public class UserControllerTest {
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.password", is(user.getPassword())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
-     * Input will look like this: {"name": "Test User", "username": "testUsername"}
+     * Input will look like this: {"password": "Test User", "username": "testUsername"}
      * @param object
      * @return string
      */

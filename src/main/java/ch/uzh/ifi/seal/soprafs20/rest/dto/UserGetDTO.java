@@ -9,7 +9,7 @@ public class UserGetDTO {
     private String password;
     private UserStatus status;
     private String token;
-    private String birth;
+    private String birthday;
     private String creationDate;
 
     public Long getId() {
@@ -50,6 +50,6 @@ public class UserGetDTO {
         this.creationDate = creationDate;
     }
 
-    public String getBirth() { return birth; }
-    public void setBirth(String birth) { this.birth = birth; }
+    public String getBirthday() { return birthday; }
+    public void setBirthday(String birthday) { this.birthday = birthday; }
 }

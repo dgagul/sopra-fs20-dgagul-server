@@ -7,8 +7,10 @@ import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class UserServiceIntegrationTest {
 
+    @Qualifier("userRepository")
     @Autowired
     private UserRepository userRepository;
 
@@ -38,7 +41,7 @@ public class UserServiceIntegrationTest {
         assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();
-        testUser.setName("testName");
+        testUser.setPassword("difficultPassword");
         testUser.setUsername("testUsername");
 
         // when
@@ -46,10 +49,10 @@ public class UserServiceIntegrationTest {
 
         // then
         assertEquals(testUser.getId(), createdUser.getId());
-        assertEquals(testUser.getName(), createdUser.getName());
+        assertEquals(testUser.getPassword(), createdUser.getPassword());
         assertEquals(testUser.getUsername(), createdUser.getUsername());
-        assertNotNull(createdUser.getToken());
-        assertEquals(UserStatus.ONLINE, createdUser.getStatus());
+        assertNull(createdUser.getToken());
+        assertEquals(UserStatus.OFFLINE, createdUser.getStatus());
     }
 
     @Test
@@ -57,20 +60,20 @@ public class UserServiceIntegrationTest {
         assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();
-        testUser.setName("testName");
+        testUser.setPassword("password123");
         testUser.setUsername("testUsername");
         User createdUser = userService.createUser(testUser);
 
         // attempt to create second user with same username
         User testUser2 = new User();
 
-        // change the name but forget about the username
-        testUser2.setName("testName2");
+        // change the password but forget about the username
+        testUser2.setPassword("newPassword");
         testUser2.setUsername("testUsername");
 
         // check that an error is thrown
-        String exceptionMessage = "The username provided is not unique. Therefore, the user could not be created!";
-        SopraServiceException exception = assertThrows(SopraServiceException.class, () -> userService.createUser(testUser2), exceptionMessage);
+        String exceptionMessage = "409 CONFLICT \"The username provided is not unique!\"";
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2), exceptionMessage);
         assertEquals(exceptionMessage, exception.getMessage());
     }
 }

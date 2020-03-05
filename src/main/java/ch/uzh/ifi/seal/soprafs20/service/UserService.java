@@ -4,8 +4,6 @@ import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.exceptions.SopraServiceException;
 import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
-import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
-import ch.uzh.ifi.seal.soprafs20.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +11,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -63,7 +59,6 @@ public class UserService {
         Date date = new Date();
         String now = formatter.format(date);
         newUser.setCreationDate(now);
-
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newUser = userRepository.save(newUser);
@@ -109,6 +104,7 @@ public class UserService {
         userFound.setToken(UUID.randomUUID().toString());
         userFound.setStatus(UserStatus.ONLINE);
 
+        userRepository.save(userFound);
         return userFound;
     }
 
@@ -129,17 +125,28 @@ public class UserService {
         userByToken.setStatus(UserStatus.OFFLINE);
         userByToken.setToken(null);
 
+        userRepository.save(userByToken);
         return userByToken;
     }
 
     public User edit(User userToEdit) {
-        System.out.println(userToEdit.getId());
-
         User userById = userRepository.getOne(userToEdit.getId());
 
+
         if (userById != null){
-            userById.setUsername(userToEdit.getUsername());
-            userById.setBirth(userToEdit.getBirth());
+            if(userToEdit.getUsername() != null){
+                userById.setUsername(userToEdit.getUsername());
+            }
+            if(userToEdit.getBirthday() != null){
+                String oldFormat = userToEdit.getBirthday();
+
+                //change from 2020-03-07 to 04.03.2020
+                StringBuilder newFromat = new StringBuilder();
+                newFromat.append(oldFormat.substring(8,10) + "." + oldFormat.substring(5,7) + "." + oldFormat.substring(0,4));
+
+                userById.setBirthday(newFromat.toString());
+            }
+            userRepository.save(userById);
             return userById;
         }
 

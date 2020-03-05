@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs20.entity;
 
 import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
+import org.hibernate.exception.DataException;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -38,7 +39,7 @@ public class User implements Serializable {
     private String creationDate;
 
     @Column
-    private String birth;
+    private String birthday ;
 
 
 	public Long getId() { return id; }
@@ -77,6 +78,6 @@ public class User implements Serializable {
 	public String getCreationDate() { return creationDate; }
 	public void setCreationDate(String creationDate) { this.creationDate = creationDate; }
 
-	public String getBirth() { return this.birth; }
-	public void  setBirth(String birth ) { this.birth = birth; }
+	public String getBirthday() { return this.birthday; }
+	public void  setBirthday(String birthday ) { this.birthday = birthday; }
 }

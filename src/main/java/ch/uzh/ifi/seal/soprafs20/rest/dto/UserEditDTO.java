@@ -4,7 +4,7 @@ public class UserEditDTO {
 
     private Long id;
     private String username;
-    private String birth;
+    private String birthday;
 
     public Long getId() {
         return this.id;
@@ -20,6 +20,6 @@ public class UserEditDTO {
         this.username = username;
     }
 
-    public String getBirth() { return birth; }
-    public void setBirth(String birth) { this.birth = birth; }
+    public String getBirthday() { return birthday; }
+    public void setBirthday(String birthday) { this.birthday = birthday; }
 }
