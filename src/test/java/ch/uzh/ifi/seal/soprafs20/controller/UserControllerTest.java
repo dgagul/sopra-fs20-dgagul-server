@@ -72,7 +72,7 @@ public class UserControllerTest {
         user.setPassword("password123");
         user.setUsername("testUsername");
         user.setToken("1");
-        user.setStatus(UserStatus.ONLINE);
+        user.setStatus(UserStatus.OFFLINE);
 
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setPassword("password123");

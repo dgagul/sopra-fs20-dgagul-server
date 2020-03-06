@@ -72,8 +72,43 @@ public class UserServiceIntegrationTest {
         testUser2.setUsername("testUsername");
 
         // check that an error is thrown
-        String exceptionMessage = "409 CONFLICT \"The username provided is not unique!\"";
+        String exceptionMessage = "The username provided is not unique!";
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2), exceptionMessage);
-        assertEquals(exceptionMessage, exception.getMessage());
+        assertEquals(exceptionMessage, exception.getReason());
+    }
+
+    @Test
+    public void login_alreadyLoggedIn_throwsException() {
+        User user1 = new User();
+        user1.setUsername("user1");
+        user1.setId(1L);
+        user1.setStatus(UserStatus.ONLINE);
+        user1.setToken("fancyToken");
+
+        // when
+        User createdUser1 = userService.createUser(user1);
+        userService.login(createdUser1);
+
+        // check that an error is thrown
+        String exceptionMessage = "Already logged in!";
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userService.login(user1), exceptionMessage);
+        assertEquals(exceptionMessage, exception.getReason());
+    }
+
+    @Test
+    public void wrongCredentials_login_throwsException() {
+        User user1 = new User();
+        user1.setUsername("user1");
+        user1.setPassword("password1");
+
+        User registeredUser = userService.createUser(user1);
+
+        // change credentials
+        user1.setPassword("wrongPW");
+
+        // check that an error is thrown
+        String exceptionMessage = "The login failed because credentials are incorrect!";
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userService.login(user1), exceptionMessage);
+        assertEquals(exceptionMessage, exception.getReason());
     }
 }

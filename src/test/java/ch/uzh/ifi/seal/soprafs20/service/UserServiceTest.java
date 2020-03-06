@@ -56,17 +56,18 @@ public class UserServiceTest {
     // Todo: change to no exception was thrown
     @Test
     public void createUser_duplicatePassword_throwsNoException() {
-        // given -> a first user has already been created
-        userService.createUser(testUser);
+        try {
+            // given -> a first user has already been created
+            userService.createUser(testUser);
 
-        // when -> setup additional mocks for UserRepository
-        Mockito.when(userRepository.findByPassword(Mockito.any())).thenReturn(testUser);
-        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
-
-        // then -> attempt to create second user with same password -> check that NO error is thrown
-        String exceptionMessage = "409 CONFLICT \"The username provided is not unique!\"";
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser), exceptionMessage);
-        assertEquals(exceptionMessage, exception.getMessage());
+            // when -> setup additional mocks for UserRepository
+            Mockito.when(userRepository.findByPassword(Mockito.any())).thenReturn(testUser);
+            Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
+        }
+        // if exception thrown => fail the test
+        catch(Exception e){
+            fail("Should not have thrown any exception");
+        }
     }
 
     @Test
@@ -79,9 +80,9 @@ public class UserServiceTest {
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
 
         // then -> attempt to create second user with same user -> check that an error is thrown
-        String exceptionMessage = "409 CONFLICT \"The username provided is not unique!\"";
+        String exceptionMessage = "The username provided is not unique!";
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser), exceptionMessage);
-        assertEquals(exceptionMessage, exception.getMessage());
+        assertEquals(exceptionMessage, exception.getReason());
     }
 
     @Test void editUser_onlyBirthDate() {

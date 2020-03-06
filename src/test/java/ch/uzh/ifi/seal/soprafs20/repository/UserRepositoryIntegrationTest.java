@@ -51,5 +51,67 @@ public class UserRepositoryIntegrationTest {
         assertEquals(found.getUsername(), user.getUsername());
         assertEquals(found.getToken(), user.getToken());
         assertEquals(found.getStatus(), user.getStatus());
+        assertEquals(found.getCreationDate(), user.getCreationDate());
     }
+
+    @Test
+    public void findByUsername_success() {
+        // get current date
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+        Date date = new Date();
+        String now = formatter.format(date);
+
+        // given
+        User user = new User();
+        user.setPassword("difficultPassword");
+        user.setUsername("firstname@lastname");
+        user.setStatus(UserStatus.OFFLINE);
+        user.setCreationDate(now);
+        user.setToken("1");
+
+        entityManager.persist(user);
+        entityManager.flush();
+
+        // when
+        User found = userRepository.findByUsername(user.getUsername());
+
+        // then
+        assertNotNull(found.getId());
+        assertEquals(found.getPassword(), user.getPassword());
+        assertEquals(found.getUsername(), user.getUsername());
+        assertEquals(found.getToken(), user.getToken());
+        assertEquals(found.getStatus(), user.getStatus());
+        assertEquals(found.getCreationDate(), user.getCreationDate());
+    }
+
+    public void findByToken() {
+        // get current date
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+        Date date = new Date();
+        String now = formatter.format(date);
+
+        // given
+        User user = new User();
+        user.setPassword("difficultPassword");
+        user.setUsername("firstname@lastname");
+        user.setStatus(UserStatus.OFFLINE);
+        user.setCreationDate(now);
+        user.setToken("1");
+
+        entityManager.persist(user);
+        entityManager.flush();
+
+        // when
+        User found = userRepository.findByToken(user.getToken());
+
+        // then
+        assertNotNull(found.getId());
+        assertEquals(found.getPassword(), user.getPassword());
+        assertEquals(found.getUsername(), user.getUsername());
+        assertEquals(found.getToken(), user.getToken());
+        assertEquals(found.getStatus(), user.getStatus());
+        assertEquals(found.getCreationDate(), user.getCreationDate());
+    }
+
+
 }
