@@ -110,5 +110,6 @@ public class UserServiceIntegrationTest {
         String exceptionMessage = "The login failed because credentials are incorrect!";
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userService.login(user1), exceptionMessage);
         assertEquals(exceptionMessage, exception.getReason());
+
     }
 }

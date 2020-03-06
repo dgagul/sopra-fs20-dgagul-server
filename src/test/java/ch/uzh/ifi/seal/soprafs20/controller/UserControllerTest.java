@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs20.controller;
 import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.exceptions.SopraServiceException;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.UserEditDTO;
 import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPostDTO;
 import ch.uzh.ifi.seal.soprafs20.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,8 +13,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Collections;
@@ -21,10 +25,10 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * UserControllerTest
@@ -59,9 +63,49 @@ public class UserControllerTest {
         // then
         mockMvc.perform(getRequest).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].password", is(user.getPassword())))
+                .andExpect(jsonPath("$[0].id", is(user.getId())))
                 .andExpect(jsonPath("$[0].username", is(user.getUsername())))
+                .andExpect(jsonPath("$[0].password", is(user.getPassword())))
+                .andExpect(jsonPath("$[0].birthday", is(user.getBirthday())))
+                .andExpect(jsonPath("$[0].creationDate", is(user.getCreationDate())))
                 .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
+    }
+
+    @Test
+    public void loggedInUser_whenPutLogin_thenReturnJsonArray() throws Exception {
+        // given
+        User user = new User();
+        user.setId(1L);
+        user.setPassword("password123");
+        user.setUsername("testUsername");
+        user.setToken("1");
+        user.setBirthday("06.03.2020");
+        user.setStatus(UserStatus.OFFLINE);
+
+        UserEditDTO userEditDTO = new UserEditDTO();
+        userEditDTO.setId(1L);
+        userEditDTO.setUsername("testUsername");
+        userEditDTO.setBirthday("06.03.2020");
+
+        given(userService.createUser(Mockito.any())).willReturn(user);
+
+        // when
+        MockHttpServletRequestBuilder putRequest = put("/login").contentType(MediaType.APPLICATION_JSON).content(asJsonString(userEditDTO));
+
+        // then
+        MvcResult result = mockMvc.perform(putRequest).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        System.out.println(result);
+        System.out.println(response);
+
+        // then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.birthday", is(user.getBirthday())));
+
     }
 
     @Test

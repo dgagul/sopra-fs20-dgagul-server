@@ -84,6 +84,7 @@ public class UserRepositoryIntegrationTest {
         assertEquals(found.getCreationDate(), user.getCreationDate());
     }
 
+    @Test
     public void findByToken() {
         // get current date
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
