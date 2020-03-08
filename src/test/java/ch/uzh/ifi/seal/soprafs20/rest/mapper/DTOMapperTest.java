@@ -67,7 +67,7 @@ public class DTOMapperTest {
         // create UserEditDTO
         UserEditDTO userEditDTO = new UserEditDTO();
         userEditDTO.setId(1L);
-        userEditDTO.setBirthday("2020-03-06");
+        userEditDTO.setBirthday("00.00.0000");
         userEditDTO.setUsername("newUsername");
 
         // MAP -> Create User

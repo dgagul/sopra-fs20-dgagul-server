@@ -60,9 +60,9 @@ public class UserController {
     @PutMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserGetDTO login(@RequestBody UserEditDTO userEditDTO) {
+    public UserGetDTO login(@RequestBody UserPostDTO userPostDTO) {
         // convert API user to internal representation
-        User userInput = DTOMapper.INSTANCE.convertUserEditDTOtoEntity(userEditDTO);
+        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
         // login user
         User loggedInUser = userService.login(userInput);

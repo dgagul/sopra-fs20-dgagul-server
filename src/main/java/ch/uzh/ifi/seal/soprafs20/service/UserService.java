@@ -132,7 +132,6 @@ public class UserService {
     public User edit(User userToEdit) {
         User userById = userRepository.getOne(userToEdit.getId());
 
-
         if (userById != null){
             // Todo: regular expression
             if(userToEdit.getUsername() != null){
