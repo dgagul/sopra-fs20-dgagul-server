@@ -134,6 +134,7 @@ public class UserService {
 
 
         if (userById != null){
+            // Todo: regular expression
             if(userToEdit.getUsername() != null){
                 userById.setUsername(userToEdit.getUsername());
             }

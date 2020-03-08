@@ -81,6 +81,7 @@ public class UserServiceIntegrationTest {
     public void login_alreadyLoggedIn_throwsException() {
         User user1 = new User();
         user1.setUsername("user1");
+        user1.setPassword("password123");
         user1.setId(1L);
         user1.setStatus(UserStatus.ONLINE);
         user1.setToken("fancyToken");
